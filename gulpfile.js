@@ -5,8 +5,8 @@ var gulp = require('gulp'),
     through2 = require('through2'),
     del      = require('del'),
     inquirer = require('inquirer'),
-    sprite = require('css-sprite').stream;
-
+    sprite = require('css-sprite').stream,
+    imageResize = require('gulp-image-resize');
 
 var paths = {
     dist: {
@@ -80,6 +80,11 @@ gulp.task('images-and-styles', ['copy-styles', 'data-uri'], function(){
         // generate emoticon sprites
 
         .pipe(emoticonFilter)
+        .pipe(imageResize({
+            width: 42,
+            height: 42,
+            imageMagick: true
+        }))
         .pipe(sprite({
             name: 'emojify-emoticons',
             style: 'emojify-emoticons.css',
@@ -104,8 +109,13 @@ gulp.task('images-and-styles', ['copy-styles', 'data-uri'], function(){
         .pipe($.filter('!**sprites**')) //exclude generated spritesheets
         .pipe(emoticonFilter.restore())
 
-        // generate all sprites
 
+        // generate all sprites
+        .pipe(imageResize({
+            width: 42,
+            height: 42,
+            imageMagick: true
+        }))
         .pipe(sprite({
             name: 'emojify',
             style: 'emojify.css',

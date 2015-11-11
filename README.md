@@ -56,6 +56,13 @@ Then add this to your Javascript code:
 
 `npm install emojify.js  --save`
 
+### ImageMagick
+Emojify uses [gulp-image-resize]('https://github.com/scalableminds/gulp-image-resize') to allow for customizable emoji sizes when using sprites. 
+
+gulp-image-resize depends on ImageMagic to manipulate the images so it will have to be install on your system.
+
+You can find the downloads and installation instructions on the ImageMagick website http://www.imagemagick.org/script/binary-releases.php.
+
 ## API
 
 ### setConfig([object])
