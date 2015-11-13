@@ -77,6 +77,33 @@ gulp.task('images-and-styles', ['copy-styles', 'data-uri'], function(){
 
         .pipe(gulp.dest(paths.dist.images.separate))
 
+        // generate all sprites
+        .pipe(imageResize({
+            width: 42,
+            height: 42,
+            imageMagick: true
+        }))
+        .pipe(sprite({
+            name: 'emojify',
+            style: 'emojify.css',
+            prefix: 'emoji',
+            cssPath: '../../images/sprites/',
+            orientation: 'binary-tree',
+            retina: true,
+            template: './build/sprites.mustache'
+        }))
+        .pipe(cssFilter)
+        .pipe($.replace('.emoji-+1', '.emoji-plus1'))
+        .pipe(gulp.dest(paths.dist.styles.sprites))
+        .pipe($.minifyCss())
+        .pipe($.rename({
+             suffix: '.min'
+        }))
+        .pipe(gulp.dest(paths.dist.styles.sprites))
+        .pipe(cssFilter.restore())
+        .pipe($.filter('**.png'))
+        .pipe(gulp.dest(paths.dist.images.sprites))
+
         // generate emoticon sprites
 
         .pipe(emoticonFilter)
@@ -105,37 +132,6 @@ gulp.task('images-and-styles', ['copy-styles', 'data-uri'], function(){
         .pipe(emoticonCssFilter.restore())
         .pipe(emoticonPngFilter)
         .pipe(gulp.dest(paths.dist.images.sprites))
-        .pipe(emoticonPngFilter.restore())
-        .pipe($.filter('!**sprites**')) //exclude generated spritesheets
-        .pipe(emoticonFilter.restore())
-
-
-        // generate all sprites
-        .pipe(imageResize({
-            width: 42,
-            height: 42,
-            imageMagick: true
-        }))
-        .pipe(sprite({
-            name: 'emojify',
-            style: 'emojify.css',
-            prefix: 'emoji',
-            cssPath: '../../images/sprites/',
-            orientation: 'binary-tree',
-            retina: true,
-            template: './build/sprites.mustache'
-        }))
-        .pipe(cssFilter)
-        .pipe($.replace('.emoji-+1', '.emoji-plus1'))
-        .pipe(gulp.dest(paths.dist.styles.sprites))
-        .pipe($.minifyCss())
-        .pipe($.rename({
-             suffix: '.min'
-        }))
-        .pipe(gulp.dest(paths.dist.styles.sprites))
-        .pipe(cssFilter.restore())
-        .pipe($.filter('**.png'))
-        .pipe(gulp.dest(paths.dist.images.sprites));
 });
 
 gulp.task('data-uri', function(){
