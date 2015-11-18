@@ -5,8 +5,9 @@ var gulp = require('gulp'),
     through2 = require('through2'),
     del      = require('del'),
     inquirer = require('inquirer'),
-    sprite = require('css-sprite').stream;
-
+    sprite = require('css-sprite').stream,
+    gulpif = require('gulp-if'),
+    imageResize = require('gulp-image-resize');
 
 var paths = {
     dist: {
@@ -65,7 +66,6 @@ var getEmoticonFilter = function(){
 
 gulp.task('images-and-styles', ['copy-styles', 'data-uri'], function(){
 
-
     var emoticonFilter = getEmoticonFilter(),
         cssFilter = $.filter('**.css'),
         emoticonCssFilter = $.filter('**.css'),
@@ -77,9 +77,41 @@ gulp.task('images-and-styles', ['copy-styles', 'data-uri'], function(){
 
         .pipe(gulp.dest(paths.dist.images.separate))
 
+        // generate all sprites
+        .pipe(gulpif($.util.env.resize != undefined ,imageResize({
+            width: $.util.env.resize,
+            height: $.util.env.resize,
+            imageMagick: true
+        })))
+        .pipe(sprite({
+            name: 'emojify',
+            style: 'emojify.css',
+            prefix: 'emoji',
+            cssPath: '../../images/sprites/',
+            orientation: 'binary-tree',
+            retina: true,
+            template: './build/sprites.mustache'
+        }))
+        .pipe(cssFilter)
+        .pipe($.replace('.emoji-+1', '.emoji-plus1'))
+        .pipe(gulp.dest(paths.dist.styles.sprites))
+        .pipe($.minifyCss())
+        .pipe($.rename({
+             suffix: '.min'
+        }))
+        .pipe(gulp.dest(paths.dist.styles.sprites))
+        .pipe(cssFilter.restore())
+        .pipe($.filter('**.png'))
+        .pipe(gulp.dest(paths.dist.images.sprites))
+
         // generate emoticon sprites
 
         .pipe(emoticonFilter)
+        .pipe(gulpif($.util.env.resize != undefined ,imageResize({
+            width: $.util.env.resize,
+            height: $.util.env.resize,
+            imageMagick: true
+        })))
         .pipe(sprite({
             name: 'emojify-emoticons',
             style: 'emojify-emoticons.css',
@@ -100,32 +132,6 @@ gulp.task('images-and-styles', ['copy-styles', 'data-uri'], function(){
         .pipe(emoticonCssFilter.restore())
         .pipe(emoticonPngFilter)
         .pipe(gulp.dest(paths.dist.images.sprites))
-        .pipe(emoticonPngFilter.restore())
-        .pipe($.filter('!**sprites**')) //exclude generated spritesheets
-        .pipe(emoticonFilter.restore())
-
-        // generate all sprites
-
-        .pipe(sprite({
-            name: 'emojify',
-            style: 'emojify.css',
-            prefix: 'emoji',
-            cssPath: '../../images/sprites/',
-            orientation: 'binary-tree',
-            retina: true,
-            template: './build/sprites.mustache'
-        }))
-        .pipe(cssFilter)
-        .pipe($.replace('.emoji-+1', '.emoji-plus1'))
-        .pipe(gulp.dest(paths.dist.styles.sprites))
-        .pipe($.minifyCss())
-        .pipe($.rename({
-             suffix: '.min'
-        }))
-        .pipe(gulp.dest(paths.dist.styles.sprites))
-        .pipe(cssFilter.restore())
-        .pipe($.filter('**.png'))
-        .pipe(gulp.dest(paths.dist.images.sprites));
 });
 
 gulp.task('data-uri', function(){
