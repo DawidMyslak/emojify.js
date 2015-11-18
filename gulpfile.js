@@ -6,6 +6,7 @@ var gulp = require('gulp'),
     del      = require('del'),
     inquirer = require('inquirer'),
     sprite = require('css-sprite').stream,
+    gulpif = require('gulp-if'),
     imageResize = require('gulp-image-resize');
 
 var paths = {
@@ -65,7 +66,6 @@ var getEmoticonFilter = function(){
 
 gulp.task('images-and-styles', ['copy-styles', 'data-uri'], function(){
 
-
     var emoticonFilter = getEmoticonFilter(),
         cssFilter = $.filter('**.css'),
         emoticonCssFilter = $.filter('**.css'),
@@ -78,11 +78,11 @@ gulp.task('images-and-styles', ['copy-styles', 'data-uri'], function(){
         .pipe(gulp.dest(paths.dist.images.separate))
 
         // generate all sprites
-        .pipe(imageResize({
-            width: 42,
-            height: 42,
+        .pipe(gulpif($.util.env.resize != undefined ,imageResize({
+            width: $.util.env.resize,
+            height: $.util.env.resize,
             imageMagick: true
-        }))
+        })))
         .pipe(sprite({
             name: 'emojify',
             style: 'emojify.css',
@@ -107,11 +107,11 @@ gulp.task('images-and-styles', ['copy-styles', 'data-uri'], function(){
         // generate emoticon sprites
 
         .pipe(emoticonFilter)
-        .pipe(imageResize({
-            width: 42,
-            height: 42,
+        .pipe(gulpif($.util.env.resize != undefined ,imageResize({
+            width: $.util.env.resize,
+            height: $.util.env.resize,
             imageMagick: true
-        }))
+        })))
         .pipe(sprite({
             name: 'emojify-emoticons',
             style: 'emojify-emoticons.css',
