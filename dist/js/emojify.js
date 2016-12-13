@@ -40,7 +40,7 @@
             function initEmoticonsProcessed() {
                 /* List of emoticons used in the regular expression */
                 var emoticons = {
-         /* :..: */ named: /:([a-z0-9A-Z_-]+):/,
+         /* :..: */ named: /:([a-z0-9A-Z]+[a-z0-9A-Z_-]*):/,
          /* :-)  */ smile: /:-?\)/g,
          /* :o   */ open_mouth: /:o/gi,
          /* :-o  */ scream: /:-o/gi,
@@ -66,9 +66,9 @@
 
                 if (defaultConfig.ignore_emoticons) {
                     emoticons = {
-             /* :..: */ named: /:([a-z0-9A-Z_-]+):/,
-             /* :+1: */ thumbsup: /:\+1:/g,
-             /* :-1: */ thumbsdown: /:\-1:/g
+             /* :..: */ named: emoticons.named,
+             /* :+1: */ thumbsup: emoticons.thumbsup,
+             /* :-1: */ thumbsdown: emoticons.thumbsdown
                     };
                 }
 
@@ -161,7 +161,7 @@
                     if(namedMatchHash[named]) { return named; }
                     return;
                 }
-                for(var i = 3; i < match.length - 1; i++) {
+                for(var i = 3; i < match.length; i++) {
                     if(match[i]) {
                         return emoticonsProcessed[i - 2][1];
                     }
