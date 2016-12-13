@@ -124,10 +124,10 @@ JS.Test.describe('emojify used with flat strings', function() {
     this.describe('with ignore_emoticons option enabled', function () {
         this.it('only works on emoji, not emoticons', function () {
             emojify.setConfig({ ignore_emoticons: true });
-            var text = ':) :+1: :P :musical_note:';
+            var text = ':) :-1: :P :musical_note:';
             var result = emojify.replace(text);
             emojify.setConfig({ ignore_emoticons: false });
-            this.assertEqual(':) <img align=\'absmiddle\' alt=\':thumbsup:\' class=\'emoji\' src=\'images/emoji/thumbsup.png\' title=\':thumbsup:\' /> :P <img align=\'absmiddle\' alt=\':musical_note:\' class=\'emoji\' src=\'images/emoji/musical_note.png\' title=\':musical_note:\' />', result);
+            this.assertEqual(':) <img align=\'absmiddle\' alt=\':thumbsdown:\' class=\'emoji\' src=\'images/emoji/thumbsdown.png\' title=\':thumbsdown:\' /> :P <img align=\'absmiddle\' alt=\':musical_note:\' class=\'emoji\' src=\'images/emoji/musical_note.png\' title=\':musical_note:\' />', result);
         });
     });
 
